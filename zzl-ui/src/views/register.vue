@@ -2,8 +2,8 @@
   <div class="register">
     <section class="register-story" aria-hidden="true">
       <div class="story-brand">
-        <span>Z</span>
-        <strong>Zzl Playground</strong>
+        <span aria-hidden="true"></span>
+        <strong>管理工作台</strong>
       </div>
 
       <div class="join-stage">
@@ -33,10 +33,10 @@
     <section class="register-panel">
       <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
         <div class="form-title">
-          <span class="mini-mark">Z</span>
+          <span class="mini-mark" aria-hidden="true"></span>
           <p>Create account</p>
           <h1>{{ title }}</h1>
-          <small>创建账号，加入 Zzl 工作台</small>
+          <small>创建账号，加入管理工作台</small>
         </div>
 
         <label class="field-label">账号</label>

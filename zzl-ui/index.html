@@ -24,213 +24,123 @@
       z-index: 999999;
       display: grid;
       place-items: center;
-      gap: 18px;
-      padding: 28px;
-      overflow: hidden;
-      color: #17151f;
-      background:
-        radial-gradient(circle at 24% 24%, rgba(255, 156, 93, 0.24), transparent 28%),
-        radial-gradient(circle at 76% 68%, rgba(109, 77, 247, 0.2), transparent 30%),
-        linear-gradient(90deg, rgba(109, 77, 247, 0.08) 1px, transparent 1px),
-        linear-gradient(0deg, rgba(109, 77, 247, 0.08) 1px, transparent 1px),
-        #fffefb;
-      background-size: auto, auto, 54px 54px, 54px 54px, auto;
+      background: rgba(248, 250, 252, 0.9);
+      backdrop-filter: blur(10px);
     }
 
-    #loader-wrapper::before {
-      content: '';
-      position: absolute;
-      width: min(72vw, 520px);
-      height: min(72vw, 520px);
-      border-radius: 38% 62% 47% 53% / 42% 38% 62% 58%;
-      background: rgba(255, 255, 255, 0.56);
-      box-shadow: 0 28px 90px rgba(23, 21, 31, 0.08);
-      animation: blobBreathe 5.2s ease-in-out infinite;
-    }
-
-    .boot-loader-scene {
-      position: absolute;
-      z-index: 1;
-      width: 168px;
-      height: 168px;
-      perspective: 760px;
-      transform-style: preserve-3d;
-    }
-
-    .boot-loader-cube {
-      position: absolute;
-      inset: 48px;
-      transform-style: preserve-3d;
-      animation: loaderCubeSpin 1.65s cubic-bezier(0.55, 0, 0.24, 1) infinite;
-    }
-
-    .boot-cube-face {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      border: 2px solid rgba(23, 21, 31, 0.08);
-      border-radius: 8px;
-      color: #ffffff;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 24px;
-      font-weight: 900;
-      background: linear-gradient(135deg, #6d4df7, #ff9c5d);
-      box-shadow: 0 18px 42px rgba(109, 77, 247, 0.2);
-    }
-
-    .boot-face-front {
-      transform: translateZ(36px);
-    }
-
-    .boot-face-back {
-      transform: rotateY(180deg) translateZ(36px);
-    }
-
-    .boot-face-right {
-      transform: rotateY(90deg) translateZ(36px);
-      background: #f7de3f;
-    }
-
-    .boot-face-left {
-      transform: rotateY(-90deg) translateZ(36px);
-      background: #ff9c5d;
-    }
-
-    .boot-face-top {
-      transform: rotateX(90deg) translateZ(36px);
-      background: #6d4df7;
-    }
-
-    .boot-face-bottom {
-      transform: rotateX(-90deg) translateZ(36px);
-      background: #17151f;
-    }
-
-    .boot-loader-orbit {
-      position: absolute;
-      inset: 18px;
-      border: 2px solid rgba(109, 77, 247, 0.18);
-      border-radius: 50%;
-      transform-style: preserve-3d;
-    }
-
-    .boot-orbit-a {
-      animation: orbitA 1.5s linear infinite;
-    }
-
-    .boot-orbit-b {
-      inset: 28px;
-      border-color: rgba(255, 156, 93, 0.28);
-      animation: orbitB 1.9s linear infinite;
-    }
-
-    .boot-loader-dot {
-      position: absolute;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      box-shadow: 0 10px 22px rgba(23, 21, 31, 0.12);
-    }
-
-    .boot-dot-a {
-      left: 16px;
-      top: 54px;
-      background: #6d4df7;
-      animation: dotFloat 1.2s ease-in-out infinite;
-    }
-
-    .boot-dot-b {
-      right: 18px;
-      top: 76px;
-      background: #ff9c5d;
-      animation: dotFloat 1.4s ease-in-out 0.18s infinite;
-    }
-
-    .boot-dot-c {
-      left: 74px;
-      bottom: 12px;
-      background: #f7de3f;
-      animation: dotFloat 1.55s ease-in-out 0.32s infinite;
-    }
-
-    #loader-wrapper .load_title {
+    .boot-loader-3d {
       position: relative;
-      z-index: 1;
-      margin: 172px 0 0;
-      color: #17151f;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: 0;
-      text-align: center;
+      width: 150px;
+      height: 150px;
+      perspective: 680px;
+      transform-style: preserve-3d;
+      animation: boot-loader-float 3.2s ease-in-out infinite;
     }
 
-    @keyframes loaderCubeSpin {
-      0% {
-        transform: rotateX(-18deg) rotateY(0deg) rotateZ(0deg);
-      }
-
-      50% {
-        transform: rotateX(18deg) rotateY(180deg) rotateZ(8deg);
-      }
-
-      100% {
-        transform: rotateX(-18deg) rotateY(360deg) rotateZ(0deg);
-      }
+    .boot-loader-glow {
+      position: absolute;
+      inset: 34px;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.22);
+      filter: blur(18px);
+      transform: translateZ(-20px);
     }
 
-    @keyframes orbitA {
-      from {
-        transform: rotateX(64deg) rotateZ(0deg);
-      }
-
-      to {
-        transform: rotateX(64deg) rotateZ(360deg);
-      }
+    .boot-loader-core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 42% 58% 55% 45%;
+      background: radial-gradient(circle at 30% 24%, #ffffff 0 9%, #c7d2fe 25%, #818cf8 58%, #4338ca 100%);
+      box-shadow: 0 18px 36px rgba(67, 56, 202, 0.28), inset -7px -9px 12px rgba(30, 27, 75, 0.18);
+      transform: translate(-50%, -50%) translateZ(22px) rotate(-12deg);
+      animation: boot-core-breathe 2.4s ease-in-out infinite;
     }
 
-    @keyframes orbitB {
-      from {
-        transform: rotateY(62deg) rotateZ(0deg);
-      }
-
-      to {
-        transform: rotateY(62deg) rotateZ(-360deg);
-      }
+    .boot-loader-ring {
+      position: absolute;
+      inset: 22px;
+      border: 1px solid rgba(99, 102, 241, 0.42);
+      border-radius: 50%;
+      transform-style: preserve-3d;
     }
 
-    @keyframes dotFloat {
+    .boot-ring-a {
+      transform: rotateX(66deg) rotateZ(12deg);
+      animation: boot-ring-a-spin 2.8s linear infinite;
+    }
 
+    .boot-ring-b {
+      inset: 32px;
+      border-color: rgba(14, 165, 233, 0.38);
+      transform: rotateY(68deg) rotateZ(-18deg);
+      animation: boot-ring-b-spin 2.2s linear infinite reverse;
+    }
+
+    .boot-loader-satellite {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 9px;
+      height: 9px;
+      margin: -4.5px;
+      border: 1px solid rgba(255, 255, 255, 0.82);
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+      transform-style: preserve-3d;
+    }
+
+    .boot-satellite-a {
+      background: #38bdf8;
+      animation: boot-satellite-a-spin 2.8s linear infinite;
+    }
+
+    .boot-satellite-b {
+      background: #fbbf24;
+      animation: boot-satellite-b-spin 2.2s linear infinite reverse;
+    }
+
+    @keyframes boot-loader-float {
       0%,
-      100% {
-        transform: translateY(0) scale(1);
-      }
-
-      50% {
-        transform: translateY(-10px) scale(1.12);
-      }
+      100% { transform: translateY(0) rotateX(0deg); }
+      50% { transform: translateY(-5px) rotateX(4deg); }
     }
 
-    @keyframes blobBreathe {
-
+    @keyframes boot-core-breathe {
       0%,
-      100% {
-        transform: scale(1) rotate(0deg);
-      }
+      100% { transform: translate(-50%, -50%) translateZ(22px) rotate(-12deg) scale(0.96); }
+      50% { transform: translate(-50%, -50%) translateZ(32px) rotate(8deg) scale(1.06); }
+    }
 
-      50% {
-        transform: scale(1.05) rotate(6deg);
-      }
+    @keyframes boot-ring-a-spin {
+      from { transform: rotateX(66deg) rotateZ(12deg); }
+      to { transform: rotateX(66deg) rotateZ(372deg); }
+    }
+
+    @keyframes boot-ring-b-spin {
+      from { transform: rotateY(68deg) rotateZ(-18deg); }
+      to { transform: rotateY(68deg) rotateZ(-378deg); }
+    }
+
+    @keyframes boot-satellite-a-spin {
+      from { transform: rotateZ(0deg) translateX(52px) rotateZ(0deg); }
+      to { transform: rotateZ(360deg) translateX(52px) rotateZ(-360deg); }
+    }
+
+    @keyframes boot-satellite-b-spin {
+      from { transform: rotateY(0deg) translateX(43px) rotateY(0deg); }
+      to { transform: rotateY(360deg) translateX(43px) rotateY(-360deg); }
     }
 
     @media (prefers-reduced-motion: reduce) {
-
-      .boot-loader-cube,
-      .boot-loader-orbit,
-      .boot-loader-dot,
-      #loader-wrapper::before {
-        animation: none !important;
+      .boot-loader-3d,
+      .boot-loader-core,
+      .boot-loader-ring,
+      .boot-loader-satellite {
+        animation: none;
       }
     }
   </style>
@@ -238,23 +148,15 @@
 
 <body>
   <div id="app">
-    <div id="loader-wrapper" role="status" aria-live="polite">
-      <div class="boot-loader-scene" aria-hidden="true">
-        <div class="boot-loader-orbit boot-orbit-a"></div>
-        <div class="boot-loader-orbit boot-orbit-b"></div>
-        <div class="boot-loader-cube">
-          <span class="boot-cube-face boot-face-front">Z</span>
-          <span class="boot-cube-face boot-face-back">Z</span>
-          <span class="boot-cube-face boot-face-right"></span>
-          <span class="boot-cube-face boot-face-left"></span>
-          <span class="boot-cube-face boot-face-top"></span>
-          <span class="boot-cube-face boot-face-bottom"></span>
-        </div>
-        <span class="boot-loader-dot boot-dot-a"></span>
-        <span class="boot-loader-dot boot-dot-b"></span>
-        <span class="boot-loader-dot boot-dot-c"></span>
+    <div id="loader-wrapper" role="status" aria-live="polite" aria-label="正在载入页面">
+      <div class="boot-loader-3d" aria-hidden="true">
+        <div class="boot-loader-glow"></div>
+        <div class="boot-loader-core"></div>
+        <div class="boot-loader-ring boot-ring-a"></div>
+        <div class="boot-loader-ring boot-ring-b"></div>
+        <span class="boot-loader-satellite boot-satellite-a"></span>
+        <span class="boot-loader-satellite boot-satellite-b"></span>
       </div>
-      <div class="load_title">Loading Zzl...</div>
     </div>
   </div>
   <script type="module" src="/src/main.js"></script>

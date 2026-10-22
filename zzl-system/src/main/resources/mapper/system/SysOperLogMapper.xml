@@ -58,10 +58,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="operName != null and operName != ''">
 				AND oper_name like concat('%', #{operName}, '%')
 			</if>
-			<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+			<if test="params.beginTime != null"><!-- 开始时间检索 -->
 				AND oper_time &gt;= #{params.beginTime}
 			</if>
-			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+			<if test="params.endTime != null"><!-- 结束时间检索 -->
 				AND oper_time &lt;= #{params.endTime}
 			</if>
 		</where>
@@ -84,4 +84,4 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         truncate table sys_oper_log
     </update>
 
-</mapper> 
+</mapper>

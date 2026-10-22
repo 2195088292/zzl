@@ -2,7 +2,7 @@
   <div class="home-page">
     <section class="welcome-band">
       <div class="welcome-copy">
-        <p class="eyebrow">Zzl Happy Console</p>
+        <p class="eyebrow">管理工作台</p>
         <h1>今天也把系统打理得漂漂亮亮</h1>
         <p>这里不是冷冰冰的数据面板，而是你的管理游乐场。用户、权限、任务、代码生成，都从一个轻快的首页开始。</p>
         <div class="welcome-actions">
@@ -34,35 +34,70 @@
       </div>
     </section>
 
+    <section class="dashboard-toolbar" aria-live="polite">
+      <div>
+        <el-tag :type="dashboardError ? 'danger' : loading ? 'warning' : 'success'" effect="plain">
+          {{ dashboardError ? '数据读取失败' : loading ? '正在同步' : streamConnected ? '实时数据' : '轮询数据' }}
+        </el-tag>
+        <small v-if="updatedAt">更新于 {{ formatTime(updatedAt) }}</small>
+      </div>
+      <el-button text icon="Refresh" :loading="loading" @click="loadDashboard">刷新数据</el-button>
+    </section>
+
+    <div v-if="loading" class="dashboard-state" role="status">
+      <span class="state-spinner"></span>
+      正在读取工作台数据…
+    </div>
+
+    <div v-else-if="dashboardError" class="dashboard-state dashboard-error" role="alert">
+      <strong>首页数据暂时无法读取</strong>
+      <span>{{ dashboardError }}</span>
+      <el-button type="primary" plain @click="loadDashboard">重新加载</el-button>
+    </div>
+
+    <template v-else>
     <section class="bubble-grid">
-      <button v-for="item in metrics" :key="item.label" class="bubble-card" :class="item.tone" type="button">
+      <article v-for="item in metrics" :key="item.key || item.label" class="bubble-card" :class="item.tone">
         <el-icon><component :is="item.icon" /></el-icon>
         <span>{{ item.label }}</span>
         <strong>{{ item.value }}</strong>
         <small>{{ item.trend }}</small>
-      </button>
+      </article>
     </section>
 
     <section class="play-grid">
       <div class="panel panel-wide">
         <div class="panel-header">
           <div>
-            <p class="eyebrow">Live Map</p>
-            <h2>系统活力地图</h2>
+            <p class="eyebrow">Service Health</p>
+            <h2>服务状态</h2>
           </div>
-          <el-tag type="success">运行中</el-tag>
+          <el-tag type="success" effect="plain">{{ services.length ? '已连接' : '暂无数据' }}</el-tag>
         </div>
         <div class="health-map">
-          <div v-for="service in services" :key="service.name" class="health-item" :class="service.tone">
+          <div v-for="service in services" :key="service.key || service.name" class="health-item" :class="service.tone">
             <div class="health-top">
               <span>{{ service.name }}</span>
-              <strong>{{ service.percent }}%</strong>
+              <strong>{{ service.status }} · {{ service.percent }}%</strong>
             </div>
             <div class="health-track">
               <i :style="{ width: service.percent + '%' }"></i>
             </div>
+            <small>{{ service.detail }}</small>
           </div>
+          <div v-if="!services.length" class="inline-empty">暂无服务数据</div>
         </div>
+      </div>
+
+      <div class="panel panel-wide service-trend-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Trend</p>
+            <h2>服务资源趋势</h2>
+          </div>
+          <small class="trend-caption">最近 12 个采样点</small>
+        </div>
+        <div ref="serviceChart" class="service-chart" role="img" aria-label="服务状态趋势图"></div>
       </div>
 
       <div class="panel sticker-panel">
@@ -86,16 +121,17 @@
             <p class="eyebrow">Today</p>
             <h2>今日小任务</h2>
           </div>
-          <span class="task-count">12</span>
+          <span class="task-count">{{ todoCount }}</span>
         </div>
         <ul class="task-list">
-          <li v-for="task in tasks" :key="task.title">
+          <li v-for="task in tasks" :key="task.key || task.title">
             <span :class="['task-dot', task.level]"></span>
             <div>
               <strong>{{ task.title }}</strong>
               <small>{{ task.desc }}</small>
             </div>
           </li>
+          <li v-if="!tasks.length" class="empty-task">暂无待办，当前很清爽</li>
         </ul>
       </div>
 
@@ -105,36 +141,44 @@
             <p class="eyebrow">Timeline</p>
             <h2>最近发生了什么</h2>
           </div>
-          <el-button text icon="Refresh">刷新</el-button>
+          <el-button text icon="Refresh" :loading="loading" @click="loadDashboard">刷新</el-button>
         </div>
         <div class="activity-list">
-          <div v-for="item in activities" :key="item.time" class="activity-item">
+          <div v-for="item in activities" :key="item.id || item.time" class="activity-item">
             <span>{{ item.time }}</span>
             <strong>{{ item.title }}</strong>
             <small>{{ item.detail }}</small>
           </div>
+          <div v-if="!activities.length" class="inline-empty">暂无最近活动</div>
         </div>
       </div>
     </section>
+    </template>
   </div>
 </template>
 
 <script setup>
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import * as echarts from 'echarts'
+import { getDashboardOverview, openDashboardStream } from '@/api/dashboard'
+
 const router = useRouter()
 
-const metrics = [
-  { label: '在线用户', value: '1,248', trend: '比昨天更热闹 +12.6%', icon: 'UserFilled', tone: 'mint' },
-  { label: '接口成功率', value: '99.92%', trend: '小火箭稳定飞行', icon: 'Connection', tone: 'blue' },
-  { label: '待办流程', value: '36', trend: '8 项需要优先看', icon: 'Tickets', tone: 'banana' },
-  { label: '提醒事件', value: '4', trend: '已经收敛 2 项', icon: 'WarningFilled', tone: 'coral' }
-]
-
-const services = [
-  { name: 'API Gateway', percent: 98, tone: 'mint' },
-  { name: 'Redis Cache', percent: 94, tone: 'blue' },
-  { name: 'MySQL Cluster', percent: 89, tone: 'banana' },
-  { name: 'Quartz Jobs', percent: 96, tone: 'coral' }
-]
+const metrics = ref([])
+const services = ref([])
+const tasks = ref([])
+const activities = ref([])
+const todoCount = ref(0)
+const updatedAt = ref('')
+const loading = ref(false)
+const dashboardError = ref('')
+const streamConnected = ref(false)
+const serviceChart = ref(null)
+const serviceHistory = ref([])
+let chartInstance
+let streamClient
+let streamRetryTimer
+let refreshTimer
 
 const shortcuts = [
   { label: '用户管理', path: '/system/user', icon: 'User' },
@@ -143,18 +187,119 @@ const shortcuts = [
   { label: '代码生成', path: '/tool/gen', icon: 'MagicStick' }
 ]
 
-const tasks = [
-  { title: '审核新增角色权限', desc: '系统管理模块有 3 条变更待确认', level: 'high' },
-  { title: '检查定时任务失败记录', desc: '最近 24 小时出现 2 次重试', level: 'medium' },
-  { title: '同步通知公告状态', desc: '5 条公告需要更新阅读范围', level: 'low' }
-]
+async function loadDashboard() {
+  loading.value = true
+  dashboardError.value = ''
+  try {
+    const response = await getDashboardOverview()
+    const data = response?.data || {}
+    await applyDashboardData(data)
+  } catch (error) {
+    dashboardError.value = '接口连接失败，请稍后重试。'
+    metrics.value = []
+    services.value = []
+    tasks.value = []
+    activities.value = []
+    todoCount.value = 0
+    updatedAt.value = ''
+  } finally {
+    loading.value = false
+  }
+}
 
-const activities = [
-  { time: '09:42', title: 'admin 登录系统', detail: '来自 127.0.0.1，已通过安全校验' },
-  { time: '10:18', title: '系统参数更新', detail: '验证码开关与文件上传策略已保存' },
-  { time: '11:05', title: '生成模块代码', detail: 'tool/gen 输出 Vue3 + Element Plus 模板' },
-  { time: '13:26', title: '权限缓存刷新', detail: '菜单与角色授权数据已重新载入' }
-]
+async function applyDashboardData(data) {
+  metrics.value = Array.isArray(data.metrics) ? data.metrics : []
+  services.value = Array.isArray(data.services || data.serviceHealth) ? (data.services || data.serviceHealth) : []
+  tasks.value = Array.isArray(data.tasks || data.todo) ? (data.tasks || data.todo) : []
+  activities.value = Array.isArray(data.activities) ? data.activities : []
+  todoCount.value = Number.isFinite(Number(data.todoCount)) ? Number(data.todoCount) : tasks.value.length
+  updatedAt.value = data.updatedAt || ''
+  await nextTick()
+  recordServiceSnapshot(services.value, updatedAt.value)
+}
+
+function recordServiceSnapshot(snapshot, timestamp) {
+  if (!snapshot.length) return
+  const point = {
+    label: formatTime(timestamp || new Date().toISOString()),
+    values: Object.fromEntries(snapshot.map(item => [item.key || item.name, Number(item.percent) || 0])),
+    names: Object.fromEntries(snapshot.map(item => [item.key || item.name, item.name]))
+  }
+  serviceHistory.value = [...serviceHistory.value, point].slice(-12)
+  renderServiceChart()
+}
+
+function renderServiceChart() {
+  if (!serviceChart.value || !serviceHistory.value.length) return
+  chartInstance ||= echarts.init(serviceChart.value)
+  const keys = Object.keys(serviceHistory.value.at(-1).values)
+  chartInstance.setOption({
+    color: ['#6d4df7', '#3fa7ff', '#f1c453', '#ef8c5b'],
+    tooltip: { trigger: 'axis' },
+    legend: { top: 0, right: 0, textStyle: { color: '#7d7488' } },
+    grid: { top: 38, right: 12, bottom: 24, left: 38 },
+    xAxis: { type: 'category', boundaryGap: false, data: serviceHistory.value.map(item => item.label), axisLine: { lineStyle: { color: '#ddd6eb' } } },
+    yAxis: { type: 'value', min: 0, max: 100, splitNumber: 4, axisLabel: { formatter: '{value}%' }, splitLine: { lineStyle: { color: '#eeeaf5' } } },
+    series: keys.map(key => ({
+      name: serviceHistory.value.at(-1).names[key] || key,
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      data: serviceHistory.value.map(item => item.values[key] ?? null)
+    }))
+  }, true)
+}
+
+function connectDashboardStream() {
+  streamClient?.close()
+  streamClient = openDashboardStream({
+    onOpen: () => {
+      streamConnected.value = true
+    },
+    onMessage: data => {
+      applyDashboardData(data).catch(() => {})
+    },
+    onError: () => {
+      streamConnected.value = false
+      if (!streamRetryTimer) {
+        streamRetryTimer = window.setTimeout(() => {
+          streamRetryTimer = null
+          connectDashboardStream()
+        }, 15000)
+      }
+    }
+  })
+}
+
+function handleChartResize() {
+  chartInstance?.resize()
+}
+
+function formatTime(value) {
+  const time = new Date(value)
+  return Number.isNaN(time.getTime()) ? value : time.toLocaleString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState === 'visible') loadDashboard()
+}
+
+onMounted(() => {
+  loadDashboard()
+  connectDashboardStream()
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  refreshTimer = window.setInterval(loadDashboard, 60000)
+  window.addEventListener('resize', handleChartResize)
+})
+
+onBeforeUnmount(() => {
+  streamClient?.close()
+  window.clearTimeout(streamRetryTimer)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  window.clearInterval(refreshTimer)
+  window.removeEventListener('resize', handleChartResize)
+  chartInstance?.dispose()
+})
 
 function goTarget(path) {
   router.push(path)
@@ -415,6 +560,59 @@ function goTarget(path) {
   }
 }
 
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  margin: 8px 0 4px;
+
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  small {
+    color: #7d7488;
+  }
+}
+
+.dashboard-state {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  min-height: 260px;
+  padding: 30px;
+  border: 1px dashed rgba(108, 84, 180, 0.24);
+  border-radius: 8px;
+  color: #7d7488;
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.service-chart {
+  width: 100%;
+  height: 240px;
+}
+
+.trend-caption {
+  color: #8b8494;
+}
+
+.dashboard-error strong {
+  color: #c45656;
+}
+
+.state-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(109, 77, 247, 0.18);
+  border-top-color: #6d4df7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
 .mint { background: #c9f7e8; }
 .blue { background: #cfe7ff; }
 .banana { background: #ffe889; }
@@ -486,6 +684,18 @@ function goTarget(path) {
     background: currentColor;
     animation: fillIn 0.8s ease both;
   }
+}
+
+.health-item small {
+  display: block;
+  margin-top: 10px;
+  color: #7d7488;
+}
+
+.inline-empty,
+.empty-task {
+  color: #8b8494;
+  text-align: center;
 }
 
 .sticker-grid {
@@ -635,6 +845,10 @@ function goTarget(path) {
   to { transform: scaleX(1); transform-origin: left; }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width: 1180px) {
   .welcome-band,
   .play-grid {
@@ -677,7 +891,8 @@ function goTarget(path) {
   .paper,
   .eye,
   .bubble-card,
-  .health-track i {
+  .health-track i,
+  .state-spinner {
     animation: none !important;
   }
 }

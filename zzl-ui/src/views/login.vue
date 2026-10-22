@@ -10,8 +10,8 @@
   >
     <section class="story-panel" aria-hidden="true">
       <div class="story-brand">
-        <span class="brand-spark">Z</span>
-        <strong>Zzl Playground</strong>
+        <span class="brand-spark" aria-hidden="true"></span>
+        <strong>管理工作台</strong>
       </div>
 
       <div ref="mascotStageRef" class="mascot-stage" :class="mascotClasses">
@@ -47,7 +47,7 @@
       <div class="tiny-star" aria-hidden="true"></div>
       <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
         <div class="form-title">
-          <span class="mini-mark">Z</span>
+          <span class="mini-mark" aria-hidden="true"></span>
           <p>Welcome back!</p>
           <h1>{{ title }}</h1>
           <small>输入账号，开启今天的管理小冒险</small>
@@ -135,7 +135,7 @@
 
         <SocialAuth mode="login" :redirect="redirect || '/index'" />
 
-        <p class="form-note">Zzl 会帮你把复杂工作整理得更轻松。</p>
+        <p class="form-note">把复杂工作整理得更轻松。</p>
       </el-form>
 
       <div class="el-login-footer">

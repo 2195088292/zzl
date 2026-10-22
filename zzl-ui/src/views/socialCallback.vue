@@ -1,8 +1,8 @@
 <template>
   <div class="social-callback">
     <div class="callback-card">
-      <span class="callback-mark">Z</span>
-      <h1>{{ error ? '第三方登录失败' : '正在进入 Zzl' }}</h1>
+      <span class="callback-mark" aria-hidden="true"></span>
+      <h1>{{ error ? '第三方登录失败' : '正在进入工作台' }}</h1>
       <p>{{ error || '授权成功，正在为你打开工作台...' }}</p>
       <el-button type="primary" @click="goLogin">{{ error ? '返回登录' : '立即进入' }}</el-button>
     </div>
