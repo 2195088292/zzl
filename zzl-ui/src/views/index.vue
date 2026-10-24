@@ -69,7 +69,7 @@
       <div class="panel panel-wide">
         <div class="panel-header">
           <div>
-            <p class="eyebrow">Service Health</p>
+            <p class="eyebrow">服务看板</p>
             <h2>服务状态</h2>
           </div>
           <el-tag type="success" effect="plain">{{ services.length ? '已连接' : '暂无数据' }}</el-tag>
@@ -92,7 +92,7 @@
       <div class="panel panel-wide service-trend-panel">
         <div class="panel-header">
           <div>
-            <p class="eyebrow">Trend</p>
+            <p class="eyebrow">实时趋势</p>
             <h2>服务资源趋势</h2>
           </div>
           <small class="trend-caption">最近 12 个采样点</small>
@@ -103,7 +103,7 @@
       <div class="panel sticker-panel">
         <div class="panel-header">
           <div>
-            <p class="eyebrow">Shortcuts</p>
+            <p class="eyebrow">常用入口</p>
             <h2>快捷贴纸</h2>
           </div>
         </div>
@@ -118,7 +118,7 @@
       <div class="panel">
         <div class="panel-header">
           <div>
-            <p class="eyebrow">Today</p>
+            <p class="eyebrow">今日节奏</p>
             <h2>今日小任务</h2>
           </div>
           <span class="task-count">{{ todoCount }}</span>
@@ -138,7 +138,7 @@
       <div class="panel panel-wide activity-panel">
         <div class="panel-header">
           <div>
-            <p class="eyebrow">Timeline</p>
+            <p class="eyebrow">活动时间</p>
             <h2>最近发生了什么</h2>
           </div>
           <el-button text icon="Refresh" :loading="loading" @click="loadDashboard">刷新</el-button>
@@ -896,4 +896,63 @@ function goTarget(path) {
     animation: none !important;
   }
 }
+
+/* 首页轻快主题：像一张有秩序的桌面便签，而不是冷冰冰的监控墙。 */
+.home-page {
+  color: #2b3044;
+  background:
+    radial-gradient(circle at 12% 4%, rgba(143,225,199,.25), transparent 28%),
+    radial-gradient(circle at 92% 0%, rgba(255,205,143,.24), transparent 24%),
+    linear-gradient(90deg, rgba(255,255,255,.58) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.58) 1px, transparent 1px),
+    #fff9f2;
+  background-size: auto, auto, 38px 38px, 38px 38px, auto;
+  font-family: "Avenir Next", "Noto Sans SC", "PingFang SC", "Segoe UI", sans-serif;
+}
+.welcome-band { border-color: rgba(69,185,158,.18); border-radius: 18px; background: rgba(255,253,249,.94); box-shadow: 0 18px 46px rgba(77,65,99,.10); }
+.welcome-copy h1 { color: #2b3044; font-weight: 700; letter-spacing: -.035em; }
+.welcome-copy p:not(.eyebrow) { color: #77798b; }
+.eyebrow { color: #2f9b86; font-size: 11px; font-weight: 800; letter-spacing: .04em; }
+.welcome-actions :deep(.el-button) { border-radius: 10px; font-weight: 700; }
+.welcome-actions :deep(.el-button--primary) { border-color: #45b99e; background: #45b99e; box-shadow: 0 10px 20px rgba(69,185,158,.18); }
+.welcome-actions :deep(.el-button--primary:hover) { border-color: #36a88d; background: #36a88d; }
+.desk-scene { border-radius: 18px; background: linear-gradient(135deg, #b7e9de, #c7e9ff 58%, #ffe0b4); }
+.helper, .paper { box-shadow: 0 18px 36px rgba(77,65,99,.14); }
+.helper-purple { background: #786cf2; }
+.helper-black { background: #2b3044; }
+.helper-yellow { background: #ffe37a; }
+.helper-orange { background: #ffad86; }
+.paper { color: #2b3044; border: 1px solid rgba(43,48,68,.06); }
+.paper-two { background: #effcf7; }
+.dashboard-toolbar small, .trend-caption { color: #888a9b; }
+.dashboard-state { border-color: rgba(69,185,158,.28); border-radius: 14px; color: #77798b; background: rgba(255,253,249,.84); }
+.dashboard-error strong { color: #d66e6e; }
+.state-spinner { border-color: rgba(69,185,158,.18); border-top-color: #45b99e; }
+.mint { background: #dff7ee; }
+.blue { background: #e2f2ff; }
+.banana { background: #fff0b4; }
+.coral { background: #ffe0ce; }
+.bubble-card { border-radius: 16px; color: #2b3044; box-shadow: 0 14px 30px rgba(77,65,99,.10); }
+.bubble-card:hover { box-shadow: 0 22px 40px rgba(77,65,99,.15); }
+.panel { border-color: rgba(69,185,158,.14); border-radius: 16px; background: rgba(255,253,249,.94); box-shadow: 0 14px 32px rgba(77,65,99,.08); }
+.panel-header h2 { color: #2b3044; font-weight: 700; }
+.health-item { border-radius: 12px; background: #f7fbf9; }
+.health-item.mint { background: #e9faf3; }
+.health-item.blue { background: #edf7ff; }
+.health-item.banana { background: #fff8dc; }
+.health-item.coral { background: #fff0e6; }
+.health-top { color: #2b3044; font-weight: 700; }
+.health-track { background: rgba(43,48,68,.08); }
+.health-item small, .inline-empty, .empty-task { color: #888a9b; }
+.sticker-grid button { border: 1px solid rgba(69,185,158,.12); border-radius: 14px; color: #2b3044; background: #eefaf5; }
+.sticker-grid button:hover { background: #dff7ee; }
+.task-count { color: #2b3044; background: #ffe37a; }
+.task-list li { border: 1px solid rgba(69,185,158,.10); border-radius: 12px; background: #fffaf4; }
+.task-list strong, .activity-item strong { color: #2b3044; }
+.task-list small, .activity-item small { color: #888a9b; }
+.activity-item { border: 1px solid rgba(69,185,158,.10); border-radius: 11px; background: #f3fbf7; }
+.activity-item span { color: #2f9b86; }
+.home-page :deep(.el-tag) { border-color: rgba(69,185,158,.24); color: #2f9b86; background: rgba(69,185,158,.08); }
+.home-page :deep(.el-button) { --el-button-text-color: #7d7e91; --el-button-hover-text-color: #2f9b86; --el-button-hover-bg-color: rgba(69,185,158,.08); }
+@media (max-width: 760px) { .welcome-band { border-radius: 14px; } .panel { border-radius: 14px; } }
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div class="navbar" :class="'nav' + settingsStore.navType">
-    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container"
+      @toggleClick="toggleSideBar" />
     <breadcrumb v-if="settingsStore.navType == 1" id="breadcrumb-container" class="breadcrumb-container" />
     <top-nav v-if="settingsStore.navType == 2" id="topmenu-container" class="topmenu-container" />
     <template v-if="settingsStore.navType == 3">
@@ -12,13 +13,17 @@
       <template v-if="appStore.device !== 'mobile'">
         <header-search id="header-search" class="right-menu-item" />
 
+        <el-tooltip v-if="canUseAi" content="AI 简聊" effect="dark" placement="bottom">
+          <div class="right-menu-item hover-effect ai-assistant-trigger" @click="aiVisible = true">✦</div>
+        </el-tooltip>
+
         <el-tooltip content="源码地址" effect="dark" placement="bottom">
           <zzl-git id="zzl-git" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip content="文档地址" effect="dark" placement="bottom">
+        <!-- <el-tooltip content="文档地址" effect="dark" placement="bottom">
           <zzl-doc id="zzl-doc" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip> -->
 
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
@@ -49,10 +54,10 @@
               <el-dropdown-item>个人中心</el-dropdown-item>
             </router-link>
             <el-dropdown-item command="setLayout" v-if="settingsStore.showSettings">
-                <span>布局设置</span>
+              <span>布局设置</span>
             </el-dropdown-item>
             <el-dropdown-item command="lockScreen">
-                <span>锁定屏幕</span>
+              <span>锁定屏幕</span>
             </el-dropdown-item>
             <el-dropdown-item divided command="logout">
               <span>退出登录</span>
@@ -61,11 +66,14 @@
         </template>
       </el-dropdown>
     </div>
+    <AiAssistant v-if="canUseAi" v-model="aiVisible" />
   </div>
 </template>
 
 <script setup>
 import { ElMessageBox } from 'element-plus'
+import { computed, ref } from 'vue'
+import { checkPermi } from '@/utils/permission'
 import Breadcrumb from '@/components/Breadcrumb'
 import TopNav from './TopNav'
 import TopBar from './TopBar'
@@ -81,6 +89,10 @@ import useUserStore from '@/store/modules/user'
 import useLockStore from '@/store/modules/lock'
 import useSettingsStore from '@/store/modules/settings'
 import HeaderNotice from './HeaderNotice'
+import AiAssistant from '@/components/AiAssistant/index.vue'
+
+const aiVisible = ref(false)
+const canUseAi = computed(() => checkPermi(['ai:workbench:query']))
 
 const route = useRoute()
 const router = useRouter()
@@ -159,11 +171,11 @@ async function toggleTheme(event) {
       {
         clipPath: !wasDark ? [...clipPath].reverse() : clipPath
       }, {
-        duration: 650,
-        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-        fill: "forwards",
-        pseudoElement: !wasDark ? "::view-transition-old(root)" : "::view-transition-new(root)"
-      }
+      duration: 650,
+      easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+      fill: "forwards",
+      pseudoElement: !wasDark ? "::view-transition-old(root)" : "::view-transition-new(root)"
+    }
     )
     await transition.finished
   } catch (error) {
@@ -253,13 +265,34 @@ async function toggleTheme(event) {
         }
       }
 
+      &.ai-assistant-trigger {
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        margin: 10px 6px;
+        padding: 0;
+        border: 1px solid rgba(130, 227, 213, .42);
+        border-radius: 8px;
+        color: #82e3d5;
+        font-size: 15px;
+        line-height: 1;
+        background: rgba(130, 227, 213, .08);
+
+        &:hover {
+          border-color: #82e3d5;
+          color: #07151c;
+          background: #82e3d5;
+        }
+      }
+
       &.theme-switch-wrapper {
         display: flex;
         align-items: center;
 
         svg {
           transition: transform 0.3s;
-          
+
           &:hover {
             transform: scale(1.15);
           }
@@ -284,7 +317,7 @@ async function toggleTheme(event) {
           border-radius: 50%;
         }
 
-        .user-nickname{
+        .user-nickname {
           position: relative;
           left: 0px;
           bottom: 10px;

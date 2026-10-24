@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzl.web.mapper.ai.AiMessageMapper">
+    <resultMap id="AiMessageRecordMap" type="com.zzl.web.mapper.ai.AiMessageRecord">
+        <result property="messageId" column="message_id"/>
+        <result property="scope" column="scope"/>
+        <result property="conversationId" column="conversation_id"/>
+        <result property="runId" column="run_id"/>
+        <result property="role" column="role"/>
+        <result property="content" column="content"/>
+        <result property="model" column="model"/>
+        <result property="tokenCount" column="token_count"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO zzl_ai_message
+            (message_id, scope, conversation_id, run_id, role, content, model, token_count, created_at)
+        VALUES
+            (#{messageId}, #{scope}, #{conversationId}, #{runId}, #{role}, #{content}, #{model}, #{tokenCount}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <select id="selectByConversation" resultMap="AiMessageRecordMap">
+        SELECT message_id, scope, conversation_id, run_id, role, content, model, token_count, created_at
+        FROM zzl_ai_message
+        WHERE scope = #{scope} AND conversation_id = #{conversationId}
+        ORDER BY created_at ASC, id ASC
+        LIMIT 500
+    </select>
+</mapper>

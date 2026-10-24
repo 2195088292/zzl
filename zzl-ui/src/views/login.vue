@@ -10,7 +10,7 @@
   >
     <section class="story-panel" aria-hidden="true">
       <div class="story-brand">
-        <span class="brand-spark" aria-hidden="true"></span>
+        <span class="brand-spark" aria-hidden="true"><WorkspaceMark /></span>
         <strong>管理工作台</strong>
       </div>
 
@@ -38,8 +38,8 @@
       </div>
 
       <div class="story-copy">
-        <h2>把后台做得有趣一点</h2>
-        <p>轻快的颜色、会呼吸的小角色、顺滑的微动效，让每天打开系统都不那么无聊。</p>
+        <h2>把日常管理变得轻松一点</h2>
+          <p>轻快的颜色、会呼吸的小角色和顺滑的小动作，让每天打开系统都有一个好心情。</p>
       </div>
     </section>
 
@@ -47,10 +47,10 @@
       <div class="tiny-star" aria-hidden="true"></div>
       <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
         <div class="form-title">
-          <span class="mini-mark" aria-hidden="true"></span>
-          <p>Welcome back!</p>
+          <span class="mini-mark" aria-hidden="true"><WorkspaceMark /></span>
+          <p>欢迎回来</p>
           <h1>{{ title }}</h1>
-          <small>输入账号，开启今天的管理小冒险</small>
+          <small>今天也轻松处理几件事</small>
         </div>
 
         <label class="field-label">账号</label>
@@ -152,6 +152,7 @@ import { encrypt, decrypt } from "@/utils/jsencrypt"
 import useUserStore from '@/store/modules/user'
 import defaultSettings from '@/settings'
 import SocialAuth from '@/components/SocialAuth/index.vue'
+import WorkspaceMark from '@/components/WorkspaceMark/index.vue'
 
 const title = import.meta.env.VITE_APP_TITLE
 const footerContent = defaultSettings.footerContent
@@ -1082,4 +1083,49 @@ getCookie()
     animation: none !important;
   }
 }
+
+/* 明亮主题：保留角色互动，降低紫灰压迫感。 */
+.login { color: #2b3044; background: #fff9f2; }
+.story-panel {
+  background:
+    radial-gradient(circle at 15% 18%, rgba(255,255,255,.34) 0 5px, transparent 6px),
+    linear-gradient(135deg, rgba(255,255,255,.22), transparent 45%),
+    linear-gradient(90deg, rgba(255,255,255,.24) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.18) 1px, transparent 1px),
+    #a9dfd6;
+  background-size: auto, auto, 56px 56px, 56px 56px, auto;
+}
+.story-brand { color: #2b3044; text-shadow: 0 10px 24px rgba(60, 119, 110, .18); }
+.brand-spark, .mini-mark { color: #2b3044; background: #fffdf9; box-shadow: 0 10px 22px rgba(58, 122, 113, .16); }
+.shape { box-shadow: 0 24px 48px rgba(57, 105, 99, .16); }
+.shape-back { background: #786cf2; }
+.shape-front { background: #2b3044; }
+.shape-sun { background: #ffe37a; }
+.shape-peach { background: #ffad86; }
+.sparkle::before, .sparkle::after { background: rgba(255,255,255,.92); }
+.story-copy { color: #2b3044; text-shadow: 0 10px 24px rgba(60, 119, 110, .12); }
+.story-copy p { color: rgba(43,48,68,.68); }
+.form-panel { background: #fffdf9; }
+.tiny-star { color: #f2a85d; }
+.login-form { color: #2b3044; }
+.login-form :deep(.el-input__wrapper) { box-shadow: 0 1px 0 #dcd8e5; }
+.login-form :deep(.el-input__wrapper.is-focus) { box-shadow: 0 2px 0 #45b99e; }
+.login-form :deep(.el-input__inner) { color: #2b3044; }
+.login-form :deep(.el-input__inner::placeholder) { color: #b3afbc; }
+.form-title p { color: #2b3044; }
+.form-title h1 { color: #6f7284; }
+.form-title small { color: #9a9aae; }
+.field-label { color: #2b3044; }
+.input-icon { color: #8fcfc0; }
+.password-toggle { color: #9a9aae; }
+.password-toggle:hover { color: #45b99e; background: rgba(69,185,158,.10); }
+.login-code { border-color: #e5e1eb; background: #f6fbf8; }
+.login-code:hover { box-shadow: 0 10px 20px rgba(69,185,158,.14); }
+.login-options :deep(.el-checkbox__label), .login-options .link-type { color: #7d7e91; }
+.login-options :deep(.el-checkbox__input.is-checked .el-checkbox__inner) { border-color: #45b99e; background-color: #45b99e; }
+.login-options .link-type { color: #2f9b86; }
+.login-button { color: #ffffff; background: linear-gradient(135deg, #45b99e 0%, #62c8af 48%, #f2aa67 100%); box-shadow: 0 16px 30px rgba(69,185,158,.22); }
+.login-button:hover, .login-button:focus { color: #ffffff; background: linear-gradient(135deg, #36a88d 0%, #52bda2 48%, #ed9953 100%); box-shadow: 0 20px 36px rgba(69,185,158,.28); }
+.form-note, .el-login-footer { color: #a3a1b0; }
+@media (max-width: 980px) { .login { background: #a9dfd6; } }
 </style>

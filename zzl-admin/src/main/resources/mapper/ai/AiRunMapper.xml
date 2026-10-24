@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzl.web.mapper.ai.AiRunMapper">
+    <resultMap id="AiRunRecordMap" type="com.zzl.web.mapper.ai.AiRunRecord">
+        <result property="runId" column="run_id"/>
+        <result property="scope" column="scope"/>
+        <result property="conversationId" column="conversation_id"/>
+        <result property="model" column="model"/>
+        <result property="question" column="question"/>
+        <result property="status" column="status"/>
+        <result property="startedAt" column="started_at"/>
+        <result property="endedAt" column="ended_at"/>
+        <result property="durationMs" column="duration_ms"/>
+        <result property="answer" column="answer"/>
+        <result property="errorMessage" column="error_message"/>
+        <result property="events" column="events"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insertRun">
+        INSERT INTO zzl_ai_run
+            (run_id, scope, conversation_id, model, question, status, started_at, events, created_at)
+        VALUES
+            (#{runId}, #{scope}, #{conversationId}, #{model}, #{question}, #{status}, #{startedAt}, #{events}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateRun">
+        UPDATE zzl_ai_run
+        SET status = #{status}, ended_at = #{endedAt}, duration_ms = #{durationMs},
+            answer = #{answer}, error_message = #{errorMessage}, events = #{events}
+        WHERE run_id = #{runId}
+    </update>
+
+    <update id="updateEvents">
+        UPDATE zzl_ai_run SET events = #{events} WHERE run_id = #{runId}
+    </update>
+
+    <select id="selectOne" resultMap="AiRunRecordMap">
+        SELECT run_id, scope, conversation_id, model, question, status, started_at, ended_at,
+               duration_ms, answer, error_message, events, created_at
+        FROM zzl_ai_run
+        WHERE scope = #{scope} AND run_id = #{runId}
+        LIMIT 1
+    </select>
+
+    <select id="selectByConversation" resultMap="AiRunRecordMap">
+        SELECT run_id, scope, conversation_id, model, question, status, started_at, ended_at,
+               duration_ms, answer, error_message, events, created_at
+        FROM zzl_ai_run
+        WHERE scope = #{scope} AND conversation_id = #{conversationId}
+        ORDER BY started_at DESC
+        LIMIT 50
+    </select>
+
+    <select id="selectRecent" resultMap="AiRunRecordMap">
+        SELECT run_id, scope, conversation_id, model, question, status, started_at, ended_at,
+               duration_ms, answer, error_message, events, created_at
+        FROM zzl_ai_run
+        WHERE scope = #{scope}
+        ORDER BY started_at DESC
+        LIMIT 50
+    </select>
+
+    <delete id="delete">
+        DELETE FROM zzl_ai_run WHERE scope = #{scope} AND run_id = #{runId}
+    </delete>
+</mapper>

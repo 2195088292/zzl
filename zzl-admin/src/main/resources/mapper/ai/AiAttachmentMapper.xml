@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzl.web.mapper.ai.AiAttachmentMapper">
+    <resultMap id="AiAttachmentRecordMap" type="com.zzl.web.mapper.ai.AiAttachmentRecord">
+        <result property="fileId" column="file_id"/>
+        <result property="scope" column="scope"/>
+        <result property="conversationId" column="conversation_id"/>
+        <result property="originalName" column="original_name"/>
+        <result property="extension" column="extension"/>
+        <result property="contentType" column="content_type"/>
+        <result property="size" column="size"/>
+        <result property="path" column="path"/>
+        <result property="extractedChars" column="extracted_chars"/>
+        <result property="textExtracted" column="text_extracted"/>
+        <result property="extractMessage" column="extract_message"/>
+        <result property="uploadedAt" column="uploaded_at"/>
+    </resultMap>
+
+    <insert id="upsert">
+        INSERT INTO zzl_ai_attachment
+            (file_id, scope, conversation_id, original_name, extension, content_type, size, path,
+             extracted_chars, text_extracted, extract_message, uploaded_at)
+        VALUES
+            (#{fileId}, #{scope}, COALESCE(#{conversationId}, ''), #{originalName}, #{extension}, #{contentType},
+             #{size}, #{path}, #{extractedChars}, #{textExtracted}, #{extractMessage}, CURRENT_TIMESTAMP)
+        ON DUPLICATE KEY UPDATE
+            conversation_id = COALESCE(#{conversationId}, conversation_id),
+            original_name = #{originalName}, extension = #{extension}, content_type = #{contentType},
+            size = #{size}, path = COALESCE(NULLIF(#{path}, ''), path), extracted_chars = #{extractedChars},
+            text_extracted = #{textExtracted}, extract_message = #{extractMessage}
+    </insert>
+
+    <select id="selectByScope" resultMap="AiAttachmentRecordMap">
+        SELECT file_id, scope, conversation_id, original_name, extension, content_type, size, path,
+               extracted_chars, text_extracted, extract_message, uploaded_at
+        FROM zzl_ai_attachment
+        WHERE scope = #{scope}
+        <if test="conversationId != null and conversationId != ''">
+            AND conversation_id = #{conversationId}
+        </if>
+        ORDER BY uploaded_at DESC
+    </select>
+
+    <select id="selectOne" resultMap="AiAttachmentRecordMap">
+        SELECT file_id, scope, conversation_id, original_name, extension, content_type, size, path,
+               extracted_chars, text_extracted, extract_message, uploaded_at
+        FROM zzl_ai_attachment
+        WHERE scope = #{scope} AND file_id = #{fileId}
+        LIMIT 1
+    </select>
+
+    <delete id="delete">
+        DELETE FROM zzl_ai_attachment WHERE scope = #{scope} AND file_id = #{fileId}
+    </delete>
+</mapper>

@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-const url = ref('https://gitee.com/y_project/Zzl-Vue')
+const url = ref('https://github.com/2195088292/zzl.git')
 
 function goto() {
   window.open(url.value)

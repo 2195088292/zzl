@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzl.web.mapper.ai.AiModelConfigMapper">
+    <resultMap id="AiModelConfigRecordMap" type="com.zzl.web.mapper.ai.AiModelConfigRecord">
+        <result property="scope" column="scope"/>
+        <result property="modelId" column="model_id"/>
+        <result property="label" column="label"/>
+        <result property="baseUrl" column="base_url"/>
+        <result property="apiKey" column="api_key"/>
+        <result property="modelName" column="model_name"/>
+        <result property="modelCatalog" column="model_catalog"/>
+        <result property="enabled" column="enabled"/>
+        <result property="temperature" column="temperature"/>
+        <result property="maxTokens" column="max_tokens"/>
+        <result property="providerType" column="provider_type"/>
+        <result property="capabilityProtocol" column="capability_protocol"/>
+        <result property="capabilities" column="capabilities"/>
+        <result property="reasoningEffort" column="reasoning_effort"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectByScope" resultMap="AiModelConfigRecordMap">
+        SELECT scope, model_id, label, base_url, api_key, model_name, model_catalog, enabled,
+               temperature, max_tokens, provider_type, capability_protocol, capabilities,
+               reasoning_effort, created_at, updated_at
+        FROM zzl_ai_model_config
+        WHERE scope = #{scope}
+        ORDER BY updated_at DESC, model_id ASC
+    </select>
+
+    <insert id="upsert">
+        INSERT INTO zzl_ai_model_config
+            (scope, model_id, label, base_url, api_key, model_name, model_catalog, enabled, temperature, max_tokens,
+             provider_type, capability_protocol, capabilities, reasoning_effort)
+        VALUES
+            (#{scope}, #{modelId}, COALESCE(#{label}, ''), COALESCE(#{baseUrl}, ''),
+             COALESCE(#{apiKey}, ''), COALESCE(#{modelName}, ''), COALESCE(#{modelCatalog}, '[]'),
+             COALESCE(#{enabled}, 1),
+             COALESCE(#{temperature}, 0.2), COALESCE(#{maxTokens}, 1200),
+             COALESCE(#{providerType}, 'auto'), COALESCE(#{capabilityProtocol}, 'auto'),
+             COALESCE(#{capabilities}, '{}'), COALESCE(#{reasoningEffort}, 'auto'))
+        ON DUPLICATE KEY UPDATE
+            label = VALUES(label), base_url = VALUES(base_url), api_key = VALUES(api_key),
+            model_name = VALUES(model_name), model_catalog = VALUES(model_catalog), enabled = VALUES(enabled),
+            temperature = VALUES(temperature), max_tokens = VALUES(max_tokens),
+            provider_type = VALUES(provider_type), capability_protocol = VALUES(capability_protocol),
+            capabilities = VALUES(capabilities),
+            reasoning_effort = VALUES(reasoning_effort),
+            updated_at = CURRENT_TIMESTAMP
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM zzl_ai_model_config WHERE scope = #{scope} AND model_id = #{modelId}
+    </delete>
+</mapper>

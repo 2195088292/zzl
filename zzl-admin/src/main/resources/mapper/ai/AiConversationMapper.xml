@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzl.web.mapper.ai.AiConversationMapper">
+    <resultMap id="AiConversationRecordMap" type="com.zzl.web.mapper.ai.AiConversationRecord">
+        <result property="scope" column="scope"/>
+        <result property="conversationId" column="conversation_id"/>
+        <result property="title" column="title"/>
+        <result property="model" column="model"/>
+        <result property="turns" column="turns"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectByScope" resultMap="AiConversationRecordMap">
+        SELECT scope, conversation_id, title, model, turns, updated_at
+        FROM zzl_ai_conversation
+        WHERE scope = #{scope}
+        ORDER BY updated_at DESC
+        LIMIT 30
+    </select>
+
+    <select id="selectOne" resultMap="AiConversationRecordMap">
+        SELECT scope, conversation_id, title, model, turns, updated_at
+        FROM zzl_ai_conversation
+        WHERE scope = #{scope} AND conversation_id = #{conversationId}
+        LIMIT 1
+    </select>
+
+    <insert id="upsert">
+        INSERT INTO zzl_ai_conversation
+            (scope, conversation_id, title, model, turns, updated_at)
+        VALUES
+            (#{scope}, #{conversationId},
+             COALESCE(#{title}, '新对话'),
+             COALESCE(#{model}, ''),
+             COALESCE(#{turns}, '[]'),
+             CURRENT_TIMESTAMP)
+        ON DUPLICATE KEY UPDATE
+            title = COALESCE(#{title}, title),
+            model = COALESCE(#{model}, model),
+            turns = COALESCE(#{turns}, turns),
+            updated_at = CURRENT_TIMESTAMP
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM zzl_ai_conversation
+        WHERE scope = #{scope} AND conversation_id = #{conversationId}
+    </delete>
+</mapper>

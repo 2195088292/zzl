@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzl.web.mapper.ai.AiRagIndexTaskMapper">
+    <resultMap id="AiRagIndexTaskRecordMap" type="com.zzl.web.mapper.ai.AiRagIndexTaskRecord">
+        <result property="taskId" column="task_id"/>
+        <result property="scope" column="scope"/>
+        <result property="fileId" column="file_id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="status" column="status"/>
+        <result property="chunks" column="chunks"/>
+        <result property="message" column="message"/>
+        <result property="attempts" column="attempts"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="startedAt" column="started_at"/>
+        <result property="finishedAt" column="finished_at"/>
+        <result property="progress" column="progress"/>
+        <result property="stage" column="stage"/>
+        <result property="indexSignature" column="index_signature"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO zzl_ai_rag_index_task
+            (task_id, scope, file_id, file_name, status, chunks, message, attempts, created_at)
+        VALUES
+            (#{taskId}, #{scope}, #{fileId}, COALESCE(#{fileName}, ''), #{status},
+             COALESCE(#{chunks}, 0), COALESCE(#{message}, ''), COALESCE(#{attempts}, 0), CURRENT_TIMESTAMP)
+    </insert>
+
+    <select id="selectLatestByFile" resultMap="AiRagIndexTaskRecordMap">
+        SELECT task_id, scope, file_id, file_name, status, chunks, message, attempts,
+               created_at, started_at, finished_at, progress, stage, index_signature
+        FROM zzl_ai_rag_index_task
+        WHERE scope = #{scope} AND file_id = #{fileId}
+        ORDER BY created_at DESC, id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectByTaskId" resultMap="AiRagIndexTaskRecordMap">
+        SELECT task_id, scope, file_id, file_name, status, chunks, message, attempts,
+               created_at, started_at, finished_at, progress, stage, index_signature
+        FROM zzl_ai_rag_index_task
+        WHERE scope = #{scope} AND task_id = #{taskId}
+        LIMIT 1
+    </select>
+
+    <select id="selectPending" resultMap="AiRagIndexTaskRecordMap">
+        SELECT task_id, scope, file_id, file_name, status, chunks, message, attempts,
+               created_at, started_at, finished_at, progress, stage, index_signature
+        FROM zzl_ai_rag_index_task
+        WHERE status IN ('QUEUED', 'RUNNING')
+        ORDER BY created_at ASC, id ASC
+    </select>
+
+    <update id="updateProgress">
+        UPDATE zzl_ai_rag_index_task SET progress=#{progress}, stage=#{stage}, index_signature=#{indexSignature}
+        WHERE task_id=#{taskId}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE zzl_ai_rag_index_task
+        SET status = #{status}, chunks = COALESCE(#{chunks}, 0), message = COALESCE(#{message}, ''),
+            attempts = COALESCE(#{attempts}, attempts), started_at = #{startedAt}, finished_at = #{finishedAt}
+        WHERE task_id = #{taskId}
+    </update>
+
+    <delete id="deleteByFile">
+        DELETE FROM zzl_ai_rag_index_task WHERE scope = #{scope} AND file_id = #{fileId}
+    </delete>
+</mapper>

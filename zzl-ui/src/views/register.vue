@@ -2,7 +2,7 @@
   <div class="register">
     <section class="register-story" aria-hidden="true">
       <div class="story-brand">
-        <span aria-hidden="true"></span>
+        <span aria-hidden="true"><WorkspaceMark /></span>
         <strong>管理工作台</strong>
       </div>
 
@@ -25,18 +25,18 @@
       </div>
 
       <div class="story-copy">
-        <h2>新成员，欢迎入场</h2>
-        <p>让账号创建也轻快一点：明亮颜色、弹跳卡片和第三方快捷注册一起上。</p>
+        <h2>欢迎加入这片小天地</h2>
+        <p>创建账号只要一会儿，之后把用户、任务和数据都放在手边。</p>
       </div>
     </section>
 
     <section class="register-panel">
       <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
         <div class="form-title">
-          <span class="mini-mark" aria-hidden="true"></span>
-          <p>Create account</p>
+          <span class="mini-mark" aria-hidden="true"><WorkspaceMark /></span>
+          <p>加入工作台</p>
           <h1>{{ title }}</h1>
-          <small>创建账号，加入管理工作台</small>
+          <small>创建账号，开始今天的工作</small>
         </div>
 
         <label class="field-label">账号</label>
@@ -134,6 +134,7 @@ import { getCodeImg, register } from "@/api/login"
 import defaultSettings from '@/settings'
 import { usePasswordRule } from "@/utils/passwordRule"
 import SocialAuth from '@/components/SocialAuth/index.vue'
+import WorkspaceMark from '@/components/WorkspaceMark/index.vue'
 
 const title = import.meta.env.VITE_APP_TITLE
 const footerContent = defaultSettings.footerContent
@@ -603,4 +604,40 @@ getCode()
     gap: 12px;
   }
 }
+
+/* 明亮主题：让注册流程像加入一个友好的工作空间。 */
+.register { background: #fff9f2; color: #2b3044; }
+.register-story {
+  background:
+    radial-gradient(circle at 16% 18%, rgba(255,255,255,.34) 0 5px, transparent 6px),
+    linear-gradient(135deg, rgba(255,255,255,.22), transparent 45%),
+    linear-gradient(90deg, rgba(255,255,255,.24) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255,255,255,.18) 1px, transparent 1px),
+    #a9dfd6;
+  background-size: auto, auto, 56px 56px, 56px 56px, auto;
+  color: #2b3044;
+}
+.story-brand { color: #2b3044; text-shadow: 0 10px 24px rgba(60,119,110,.18); }
+.story-brand span, .mini-mark { color: #2b3044; background: #fffdf9; box-shadow: 0 10px 22px rgba(58,122,113,.16); }
+.join-card { box-shadow: 0 24px 48px rgba(57,105,99,.16); }
+.card-a { background: #ffad86; }
+.card-b { background: #786cf2; }
+.card-c { background: #ffe37a; }
+.story-copy { color: #2b3044; text-shadow: 0 10px 24px rgba(60,119,110,.12); }
+.story-copy p { color: rgba(43,48,68,.68); }
+.register-panel { background: #fffdf9; }
+.form-title p { color: #2b3044; }
+.form-title h1 { color: #6f7284; }
+.form-title small { color: #9a9aae; }
+.field-label { color: #2b3044; }
+:deep(.el-input__wrapper) { box-shadow: 0 1px 0 #dcd8e5; }
+:deep(.el-input__wrapper.is-focus) { box-shadow: 0 2px 0 #45b99e; }
+:deep(.el-input__inner) { color: #2b3044; }
+:deep(.el-input__inner::placeholder) { color: #b3afbc; }
+.input-icon { color: #8fcfc0; }
+.register-code { border-color: #e5e1eb; background: #f6fbf8; }
+.register-button { color: #ffffff; background: linear-gradient(135deg, #45b99e 0%, #62c8af 48%, #f2aa67 100%); box-shadow: 0 16px 30px rgba(69,185,158,.22); }
+.register-tip, .el-register-footer { color: #a3a1b0; }
+.link-type { color: #2f9b86; }
+@media (max-width: 980px) { .register-story { background-color: #a9dfd6; } }
 </style>

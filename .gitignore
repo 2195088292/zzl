@@ -42,6 +42,13 @@ nbdist/
 *.xml.versionsBackup
 *.swp
 
+# Local browser diagnostics and agent work notes
+/.playwright-cli/
+/output/
+/task_plan.md
+/findings.md
+/progress.md
+
 !*/build/*.java
 !*/build/*.html
 !*/build/*.xml

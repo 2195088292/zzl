@@ -12,6 +12,44 @@ zzl:
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
   captchaType: math
+  # AI 管理助手。全局开关开启；未配置可用模型时自动回退本地摘要。
+  ai:
+    enabled: true
+    default-model: ollama
+    rag:
+      # 可选本机 OCR。启用前安装 Tesseract 及 chi_sim/eng 语言包。
+      ocr:
+        enabled: false
+        command: tesseract
+        languages: chi_sim+eng
+      embedding:
+        enabled: true
+        # local：本地词法向量；openai：远端失败报告错误，避免同一索引混入不同向量空间。
+        provider: local
+        endpoint: https://api.openai.com/v1/embeddings
+        api-key: ${OPENAI_API_KEY:}
+        model: text-embedding-3-small
+        dimension: 96
+        timeout-ms: 2500
+      # 可选外部向量库。mysql 保持零依赖；qdrant 启用后写入/召回失败自动回退 MySQL JSON。
+      vector-store:
+        provider: mysql
+        enabled: false
+        base-url: http://localhost:6333
+        api-key: ${QDRANT_API_KEY:}
+        collection: zzl_ai_chunks
+        auto-create: true
+        timeout-ms: 1800
+        search-limit: 40
+    # 默认只保留本地 Ollama；第三方模型从“模型管理”运行时添加。
+    models:
+      ollama:
+        label: Ollama 本地模型
+        base-url: http://localhost:11434/v1
+        api-key: ollama
+        model-name: qwen2.5:7b
+        temperature: 0.2
+        max-tokens: 1200
 
 # 开发环境配置
   social:
@@ -105,9 +143,9 @@ spring:
   servlet:
     multipart:
       # 单个文件大小
-      max-file-size: 10MB
+      max-file-size: 20MB
       # 设置总上传的文件大小
-      max-request-size: 20MB
+      max-request-size: 25MB
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss

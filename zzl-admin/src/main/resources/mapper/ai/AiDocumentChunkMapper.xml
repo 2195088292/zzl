@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzl.web.mapper.ai.AiDocumentChunkMapper">
+    <resultMap id="AiDocumentChunkRecordMap" type="com.zzl.web.mapper.ai.AiDocumentChunkRecord">
+        <result property="chunkId" column="chunk_id"/>
+        <result property="fileId" column="file_id"/>
+        <result property="scope" column="scope"/>
+        <result property="conversationId" column="conversation_id"/>
+        <result property="sourceName" column="source_name"/>
+        <result property="chunkIndex" column="chunk_index"/>
+        <result property="startOffset" column="start_offset"/>
+        <result property="endOffset" column="end_offset"/>
+        <result property="content" column="content"/>
+        <result property="keywords" column="keywords"/>
+        <result property="embedding" column="embedding"/>
+        <result property="embeddingModel" column="embedding_model"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO zzl_ai_document_chunk
+            (chunk_id, file_id, scope, conversation_id, source_name, chunk_index,
+             start_offset, end_offset, content, keywords, embedding, embedding_model, created_at)
+        VALUES
+            (#{chunkId}, #{fileId}, #{scope}, COALESCE(#{conversationId}, ''), #{sourceName}, #{chunkIndex},
+             #{startOffset}, #{endOffset}, #{content}, COALESCE(#{keywords}, ''),
+             COALESCE(#{embedding}, ''), COALESCE(#{embeddingModel}, ''), CURRENT_TIMESTAMP)
+    </insert>
+
+    <delete id="deleteByFile">
+        DELETE FROM zzl_ai_document_chunk WHERE scope = #{scope} AND file_id = #{fileId}
+    </delete>
+
+    <select id="selectByScope" resultMap="AiDocumentChunkRecordMap">
+        SELECT chunk_id, file_id, scope, conversation_id, source_name, chunk_index,
+               start_offset, end_offset, content, keywords, embedding, embedding_model, created_at
+        FROM zzl_ai_document_chunk
+        WHERE scope = #{scope}
+        <if test="conversationId != null and conversationId != ''">
+            AND conversation_id = #{conversationId}
+        </if>
+        <if test="fileIds != null and fileIds.size() > 0">
+            AND file_id IN
+            <foreach collection="fileIds" item="fileId" open="(" separator="," close=")">
+                #{fileId}
+            </foreach>
+        </if>
+        ORDER BY file_id, chunk_index
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectByChunkIds" resultMap="AiDocumentChunkRecordMap">
+        SELECT * FROM zzl_ai_document_chunk WHERE scope = #{scope} AND chunk_id IN
+        <foreach collection="chunkIds" item="chunkId" open="(" separator="," close=")">#{chunkId}</foreach>
+    </select>
+
+    <select id="selectKeywordByScope" resultMap="AiDocumentChunkRecordMap">
+        SELECT chunk_id, file_id, scope, conversation_id, source_name, chunk_index,
+               start_offset, end_offset, content, keywords, embedding, embedding_model, created_at,
+               MATCH(content, keywords) AGAINST (#{query} IN NATURAL LANGUAGE MODE) AS keyword_score
+        FROM zzl_ai_document_chunk
+        WHERE scope = #{scope}
+          AND MATCH(content, keywords) AGAINST (#{query} IN NATURAL LANGUAGE MODE)
+        <if test="conversationId != null and conversationId != ''">
+            AND conversation_id = #{conversationId}
+        </if>
+        <if test="fileIds != null and fileIds.size() > 0">
+            AND file_id IN
+            <foreach collection="fileIds" item="fileId" open="(" separator="," close=")">
+                #{fileId}
+            </foreach>
+        </if>
+        ORDER BY keyword_score DESC, file_id, chunk_index
+        LIMIT #{limit}
+    </select>
+</mapper>
